@@ -144,6 +144,14 @@ def main():
             data = get_data()
 
             schedule_automode = data.get("schedule_automode")
+            schedule_on_time=data.get("schedule_on_time")
+            schedule_off_time=data.get("schedule_off_time")
+            sensor_automode=data.get("sensor_automode")
+            sensor_threshold=data.get("sensor_threshold")
+            sensor_off_delay=data.get("sensor_off_delay")
+            light=data.get("light")
+            fan=data.get("fan")
+
 
             if schedule_automode == True:
                 if schedule_on_time:
@@ -152,8 +160,17 @@ def main():
             elif sensor_automode == True:
                 automode(sensor, sensor_off_delay)
             
-            elif():
-                relay1_on()
+            else:
+                if light==True:
+                    relay1_on()
+                else:
+                    relay1_off()
+                if fan==True:
+                    relay2_on()
+                else:
+                    relay2_off()
+
+
                 
 
             
