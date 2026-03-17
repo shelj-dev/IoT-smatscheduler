@@ -11,6 +11,7 @@ class Manual(models.Model):
         verbose_name = "Manual Schedule"
         verbose_name_plural = "Manual Schedules"
 
+
 class Motion(models.Model):
     """This controls motion control mode"""
     threshold=models.IntegerField()
@@ -21,11 +22,11 @@ class Motion(models.Model):
         verbose_name = "Motion Schedule"
         verbose_name_plural = "Motion Schedules"
 
+
 class sharedData(models.Model):
     """This controls light or fan"""
     light=models.BooleanField(default=True)
     fan=models.BooleanField(default=True)
-    # autoMode=models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Lights ON OFF control"
