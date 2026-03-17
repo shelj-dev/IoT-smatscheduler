@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-4y7!rz=*%kic#w2t8jlx^!t=1xq_$4g#rg6)sd5yttxmhi(q3)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -116,3 +116,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+TIME_ZONE = "Asia/Kolkata"
+USE_TZ = True

@@ -2,24 +2,44 @@ from django.db import models
 
 
 class Manual(models.Model):
+    """Turn on or off on the scheduled time"""
     onTime=models.TimeField()
     offTime=models.TimeField()
     status = models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name = "Manual Schedule"
+        verbose_name_plural = "Manual Schedules"
+
 class Motion(models.Model):
-    theshold=models.IntegerField()
+    """This controls motion control mode"""
+    threshold=models.IntegerField()
     offDelay=models.IntegerField()
-    staus=models.BooleanField(default=True)
+    status=models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Motion Schedule"
+        verbose_name_plural = "Motion Schedules"
 
 class sharedData(models.Model):
+    """This controls light or fan"""
     light=models.BooleanField(default=True)
     fan=models.BooleanField(default=True)
     # autoMode=models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name = "Lights ON OFF control"
+        verbose_name_plural = "Lights ON OFF controls"
+
+
 class sensor_data(models.Model):
+    """Stores data from the pico"""
     sensor_value=models.IntegerField()
     time_stamp=models.DateTimeField( auto_now_add=True)
 
+    class Meta:
+        verbose_name = "Motion mode control"
+        verbose_name_plural = "Motion mode controls"
 
 
 

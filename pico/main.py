@@ -7,7 +7,7 @@ from machine import Pin
 WIFI_SSID = "iot kids"
 WIFI_PASSWORD = "bright kidoos"
 
-SERVER_IP_URL = "http://10.189.178.236:8000/"
+SERVER_IP_URL = "http://10.189.178.175:8000/"
 
 wifi_status = False
 
@@ -51,21 +51,22 @@ def connect_wifi():
 
 def relay1_on():
     relay1.value(1)
-    print("Relay ON")
+    print("Relay 1 ON")
 
 
 def relay1_off():
     relay1.value(0)
-    print("Relay OFF")
-    
+    print("Relay 1 OFF")
+
+
 def relay2_on():
     relay2.value(1)
-    print("Relay ON")
+    print("Relay 2 ON")
 
 
 def relay2_off():
     relay2.value(0)
-    print("Relay OFF")
+    print("Relay 2 OFF")
 
 
 def sensor_data():
@@ -98,14 +99,16 @@ def send_data(data):
 
 def get_data():
 
-    url = SERVER_IP_URL + "api/send-relay/"
+    url = SERVER_IP_URL + "api/send_data/"
     
     try:
         r = urequests.get(url)
+        
+        print("RAW RESPONSE:", r.text)  
         data = r.json()
         r.close()
         
-        print(data)
+        #print(data)
         return data
 
     except Exception as e:
@@ -115,10 +118,11 @@ def get_data():
 
 def automode(motion, lim_val):
     global timeout, timelim
+    
 
     if motion == 1:
-        r1.value(0)
-        r2.value(0)
+        relay1.value(0)
+        relay2.value(0)
         timelim = lim_val
         timeout = False
 
@@ -130,8 +134,8 @@ def automode(motion, lim_val):
             timeout = True
 
         if timeout:
-            r1.value(1)
-            r2.value(1)
+            relay1.value(1)
+            relay2.value(1)
 
 def main():
     while True:
@@ -142,6 +146,8 @@ def main():
             send_data(sensor)
             
             data = get_data()
+            
+            # print(data)
 
             schedule_automode = data.get("schedule_automode")
             schedule_on_time=data.get("schedule_on_time")
@@ -155,9 +161,14 @@ def main():
 
             if schedule_automode == True:
                 if schedule_on_time:
-                    ...
+                    print("schedule relay ON")
+                    relay1_on()
+                if schedule_off_time:
+                    print("schedule relay OFF")
+                    relay1_off()
 
             elif sensor_automode == True:
+                print("Motion Auto mode ON")
                 automode(sensor, sensor_off_delay)
             
             else:
@@ -169,11 +180,7 @@ def main():
                     relay2_on()
                 else:
                     relay2_off()
-
-
-                
-
-            
+ 
         time.sleep(1.5)
 
 main()

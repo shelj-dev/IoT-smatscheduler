@@ -9,4 +9,4 @@ class ManualForm(forms.ModelForm):
 class MotionForm(forms.ModelForm):
     class Meta:
         model=Motion
-        fields=['theshold','offDelay','staus']
+        fields=['threshold','offDelay','status']
