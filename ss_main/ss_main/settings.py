@@ -81,3 +81,5 @@ STATIC_URL = 'static/'
 
 TIME_ZONE = "Asia/Kolkata"
 USE_TZ = True
+LOGIN_REDIRECT_URL="dashbord"
+LOGOUT_REDIRECT_URL="login"

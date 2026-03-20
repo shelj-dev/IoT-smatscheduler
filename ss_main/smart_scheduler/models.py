@@ -24,7 +24,7 @@ class Motion(models.Model):
 
 
 class sharedData(models.Model):
-    """This controls light or fan"""
+    """This controls  the device light or fan"""
     light=models.BooleanField(default=True)
     fan=models.BooleanField(default=True)
 

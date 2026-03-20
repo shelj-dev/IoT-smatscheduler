@@ -1,5 +1,5 @@
-from django.shortcuts import render,redirect,get_object_or_404
-from smart_scheduler.forms import ManualForm,MotionForm
+from django.shortcuts import render,redirect,get_object_or_404,redirect
+from smart_scheduler.forms import ManualForm,MotionForm,LoginForm
 from smart_scheduler.models import Manual,Motion,sharedData, sensor_data
 import json
 from django.http import JsonResponse
@@ -7,32 +7,59 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from django.utils import timezone
 from datetime import datetime
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login
+from datetime import timedelta
 
 
 
-def update(request):
-    data=get_object_or_404(Manual,1)
+def manual_Data(request):
+    data=Manual.objects.first()
     if request.method=="POST":
         time=ManualForm(request.POST,instance=data)
-        if time.is_Vaild():
-            time.save
-            return redirect("update")
+        if time.is_valid():
+            time.save()
+            return redirect("manual")
     else:
         time=ManualForm()
-    return render(request,"update.html",{'time':time})
+    return render(request,"manual.html",{'time':time})
 
 
 def motion_update(request):
     data=get_object_or_404(Motion,1)
     if request.method=="POST":
         time=MotionForm(request.POST,instance=data)
-        if time.is_Vaild():
-            time.save
+        if time.is_valid():
+            time.save()
             return redirect("update")
     else:
         time=MotionForm()
     return render(request,"update.html",{'time':time})
 
+def control_page(request):
+    return render(request, "control_device.html") 
+
+def control_device(request):
+    data = sharedData.objects.first()
+
+    if not data:
+        data = sharedData.objects.create()
+
+    device = request.GET.get("device")
+    action = request.GET.get("action")
+
+    if device == "light":
+        data.light = (action == "on")
+    elif device == "fan":
+        data.fan = (action == "on")
+
+    data.save()
+
+    return JsonResponse({
+        "status": "success",
+        "device": device,
+        "action": action
+    })
 
 @csrf_exempt
 def get_sensor_data(request):
@@ -94,3 +121,45 @@ def send_sensor_data(request):
     print(data)
     return JsonResponse(data)
 
+def loginForm(request):
+    if request.method== "POST":
+        form=AuthenticationForm(request,data=request.POST)
+        if form.is_valid():
+            user=form.get_user()
+            login(request,user)
+            return redirect("dashboard")
+    else:
+        form=AuthenticationForm()
+    return render(request,"login.html",{"form":form})
+
+
+def sensor_data_api(request):
+    
+    data = sensor_data.objects.order_by('-time_stamp')[:1]  
+
+    is_connected = False
+    response_data = []
+
+    if data:
+        last_record = data[0]
+        now = timezone.now()
+
+        # ✅ FIXED field name
+        is_connected = last_record.time_stamp >= now - timedelta(seconds=7)
+
+        # ✅ Convert queryset to JSON serializable list
+        for d in data:
+            response_data.append({
+                "value": d.sensor_value,
+                "time": d.time_stamp.strftime("%H:%M:%S")
+            })
+
+    return JsonResponse({
+        "data": response_data,
+        "is_connected": is_connected
+    })
+
+def dashboard(request):
+    data = sensor_data.objects.order_by('-time_stamp')[:10]
+    print(data)
+    return render(request,"dashboard.html", {"data": data})

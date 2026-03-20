@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Scheduler - Control</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0f172a;
+            color: white;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 30px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            width: 300px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .on {
+            background: #10b981;
+            color: white;
+        }
+
+        .off {
+            background: #ef4444;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        #status {
+            margin-top: 30px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Device Control Panel</h1>
+
+    <div class="container">
+
+        <!-- Light -->
+        <div class="card">
+            <h2>💡 Light</h2>
+            <button class="on" onclick="control('light','on')">Light ON</button>
+            <button class="off" onclick="control('light','off')">Light OFF</button>
+        </div>
+
+        <!-- Fan -->
+        <div class="card">
+            <h2>🌀 Fan</h2>
+            <button class="on" onclick="control('fan','on')">Fan ON</button>
+            <button class="off" onclick="control('fan','off')">Fan OFF</button>
+        </div>
+
+    </div>
+
+    <!-- Status -->
+    <div id="status">Status: Waiting...</div>
+
+<script>
+    async function control(device, action){
+        try {
+            const response = await fetch(`/api/api/control/?device=${device}&action=${action}`);
+
+            // ❌ If server returns error (404, 500 etc.)
+            if (!response.ok) {
+                document.getElementById("status").innerHTML = "❌ Server error: " + response.status;
+                return;
+            }
+
+            // ✅ Read response text (for debugging)
+            const text = await response.text();
+            console.log("RAW RESPONSE:", text);
+
+            let data;
+
+            try {
+                // ✅ Try converting to JSON
+                data = JSON.parse(text);
+            } catch (e) {
+                // ❌ If it's not JSON (HTML error page)
+                document.getElementById("status").innerHTML = "❌ Invalid response (not JSON)";
+                console.error("JSON parse error:", e);
+                return;
+            }
+
+            // ✅ Success UI update
+            document.getElementById("status").innerHTML =
+                "✅ " + data.device.toUpperCase() + " turned " + data.action.toUpperCase();
+
+        } catch (error) {
+            console.log("Error:", error);
+            document.getElementById("status").innerHTML = "⚠ Network error";
+        }
+    }
+</script>
+
+</body>
+</html>
