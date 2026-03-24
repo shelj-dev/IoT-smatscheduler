@@ -7,7 +7,7 @@ from machine import Pin
 WIFI_SSID = "iot kids"
 WIFI_PASSWORD = "bright kidoos"
 
-SERVER_IP_URL = "http://10.189.178.175:8000/"
+SERVER_IP_URL = "http://10.237.39.175:8000/"
 
 wifi_status = False
 

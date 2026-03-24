@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scheduler Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #0f172a;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-200 antialiased">
+    <div class="flex h-screen overflow-hidden">
+      <aside class="flex-shrink-0 border-r border-white/5">
+        {% include 'includes/sidebar.html' %}
+      </aside>
+
+      <main class="custom-scrollbar relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        <header class="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-white/5 bg-slate-950/80 px-8 backdrop-blur-md">
+          <div class="flex items-center gap-2 text-sm font-medium text-slate-400">
+            System Status:
+            <span id="global-nav-status" class="flex items-center gap-2 transition-colors duration-500 text-slate-500">
+              <span class="h-2 w-2 rounded-full bg-current animate-pulse"></span>
+              Checking...
+            </span>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white">JD</div>
+          </div>
+        </header>
+
+        <div class="p-8">
+          {% block body %}
+
+          {% endblock %}
+        </div>
+      </main>
+    </div>
+
+    <script>
+      async function updateGlobalStatus() {
+        try {
+          const response = await fetch('/api/sensor_data_api/')
+          const data = await response.json()
+          const navStatus = document.getElementById('global-nav-status')
+      
+          if (!navStatus) return
+      
+          if (data.is_connected) {
+            navStatus.innerHTML = '<span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span> Online'
+            navStatus.classList.remove('text-slate-500', 'text-rose-500')
+            navStatus.classList.add('text-emerald-500')
+          } else {
+            navStatus.innerHTML = '<span class="h-2 w-2 rounded-full bg-rose-500"></span> Offline'
+            navStatus.classList.remove('text-slate-500', 'text-emerald-500')
+            navStatus.classList.add('text-rose-500')
+          }
+        } catch (error) {
+          console.error('Global Status Error:', error)
+        }
+      }
+      
+      // Update every 5 seconds (slightly slower than specific page data to save bandwidth)
+      setInterval(updateGlobalStatus, 5000)
+      updateGlobalStatus()
+    </script>
+  </body>
+</html>

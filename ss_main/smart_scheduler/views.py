@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404,redirect
-from smart_scheduler.forms import ManualForm,MotionForm,LoginForm
-from smart_scheduler.models import Manual,Motion,sharedData, sensor_data
+from smart_scheduler.forms import ManualScheduleForm,MotionForm,LoginForm
+from smart_scheduler.models import ManualSchedule,Motion,RelayControls, SensorData
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -13,19 +13,24 @@ from datetime import timedelta
 
 
 
-def manual_Data(request):
-    data=Manual.objects.first()
+def manual_data(request):
+    """
+    to update the sensor data
+    """
+    data=ManualSchedule.objects.first()
     if request.method=="POST":
-        time=ManualForm(request.POST,instance=data)
+        time=ManualScheduleForm(request.POST,instance=data)
         if time.is_valid():
             time.save()
+            print("Success")
             return redirect("manual")
     else:
-        time=ManualForm()
+        time=ManualScheduleForm(instance=data)
     return render(request,"manual.html",{'time':time})
 
 
 def motion_update(request):
+    """data to update to motion"""
     data=get_object_or_404(Motion,1)
     if request.method=="POST":
         time=MotionForm(request.POST,instance=data)
@@ -40,10 +45,10 @@ def control_page(request):
     return render(request, "control_device.html") 
 
 def control_device(request):
-    data = sharedData.objects.first()
+    data = RelayControls.objects.first()
 
     if not data:
-        data = sharedData.objects.create()
+        data = RelayControls.objects.create()
 
     device = request.GET.get("device")
     action = request.GET.get("action")
@@ -63,12 +68,13 @@ def control_device(request):
 
 @csrf_exempt
 def get_sensor_data(request):
+    """sensor data  to jason formate"""
 
     if request.method == "POST":
         data = json.loads(request.body)
 
         value = data.get("sensor")
-        sensor_data.objects.create(sensor_value=value)
+        SensorData.objects.create(sensor_value=value)
 
         return JsonResponse({
             "status": "received",
@@ -80,9 +86,9 @@ def get_sensor_data(request):
 
 @require_GET
 def send_sensor_data(request):
-    schedule = Manual.objects.first()
+    schedule = ManualSchedule.objects.first()
     sensor = Motion.objects.first()
-    control = sharedData.objects.first()
+    control = RelayControls.objects.first()
 
     now = timezone.localtime()
 
@@ -135,7 +141,7 @@ def loginForm(request):
 
 def sensor_data_api(request):
     
-    data = sensor_data.objects.order_by('-time_stamp')[:1]  
+    data = SensorData.objects.order_by('-time_stamp')[:1]  
 
     is_connected = False
     response_data = []
@@ -159,7 +165,16 @@ def sensor_data_api(request):
         "is_connected": is_connected
     })
 
+
 def dashboard(request):
-    data = sensor_data.objects.order_by('-time_stamp')[:10]
+    data = SensorData.objects.order_by('-time_stamp')[:10]
+    motion = Motion.objects.first()
     print(data)
-    return render(request,"dashboard.html", {"data": data})
+    if request.method == "POST":
+        form=MotionForm(request.POST, instance=motion)
+        if form.is_valid():
+            form.save()
+            return redirect("dashboard")
+    else:
+        form=MotionForm(instance=motion)   
+    return render(request,"dashboard.html", {"data": data, "form":form})
