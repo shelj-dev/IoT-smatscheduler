@@ -1,11 +1,93 @@
-<div class="circle circle-1"></div>
-<div class="circle circle-2"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Scheduler IoT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for Django's {{ form.as_p }} output */
+        .django-form p {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .django-form label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #94a3b8; /* slate-400 */
+            padding-left: 0.25rem;
+        }
+        .django-form input {
+            width: 100%;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(15, 23, 42, 0.8); /* slate-950 */
+            padding: 0.875rem 1rem;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .django-form input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        /* Error list styling */
+        .errorlist {
+            color: #f43f5e;
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+            list-style: none;
+            padding: 0;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 flex min-h-screen items-center justify-center px-4 overflow-hidden">
+    
+    <div class="absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-blue-600/10 blur-[120px] animate-pulse"></div>
+    <div class="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-indigo-600/10 blur-[120px] animate-pulse" style="animation-delay: 2s;"></div>
 
-<div class="login-container">
-  <h2>Welcome Back</h2>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
-</div>
+    <div class="relative w-full max-w-md">
+        <div class="flex justify-center mb-8">
+            <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 shadow-2xl shadow-blue-600/40 text-white">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                    <polyline points="10 17 15 12 10 7"></polyline>
+                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+            </div>
+        </div>
+
+        <div class="overflow-hidden rounded-3xl border border-white/10 bg-slate-900/40 p-8 md:p-10 shadow-2xl backdrop-blur-2xl">
+            <div class="text-center mb-10">
+                <h1 class="text-3xl font-black tracking-tight text-white">Welcome Back</h1>
+                <p class="mt-2 text-sm text-slate-400 font-medium">Please enter your details to sign in</p>
+            </div>
+
+            <form method="POST" class="django-form">
+                {% csrf_token %}
+                
+                {{ form.as_p }}
+
+                <button type="submit" class="group relative w-full overflow-hidden rounded-xl bg-blue-600 py-4 font-bold text-white transition-all hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-600/20 active:scale-[0.98]">
+                    <span class="relative z-10">Sign In to Dashboard</span>
+                    <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700 group-hover:translate-x-full"></div>
+                </button>
+            </form>
+
+            <div class="mt-8 flex justify-center border-t border-white/5 pt-6 text-center">
+                <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold">
+                    &copy; 2026 Scheduler IoT System
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <a href="/" class="text-sm font-medium text-slate-500 hover:text-slate-300 transition-colors">
+                &larr; Return to Home
+            </a>
+        </div>
+    </div>
+</body>
+</html>
