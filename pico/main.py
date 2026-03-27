@@ -4,10 +4,10 @@ import urequests
 from machine import Pin
 
 
-WIFI_SSID = "iot kids"
-WIFI_PASSWORD = "bright kidoos"
+WIFI_SSID = "S24 FE" 
+WIFI_PASSWORD = "password"
 
-SERVER_IP_URL = "http://10.237.39.175:8000/"
+SERVER_IP_URL = "http://10.64.61.175:8000/"
 
 wifi_status = False
 
@@ -121,8 +121,8 @@ def automode(motion, lim_val):
     
 
     if motion == 1:
-        relay1.value(0)
-        relay2.value(0)
+        relay1.value(1)
+        relay2.value(1)
         timelim = lim_val
         timeout = False
 
@@ -134,8 +134,8 @@ def automode(motion, lim_val):
             timeout = True
 
         if timeout:
-            relay1.value(1)
-            relay2.value(1)
+            relay1.value(0)
+            relay2.value(0)
 
 def main():
     while True:
@@ -184,3 +184,4 @@ def main():
         time.sleep(1.5)
 
 main()
+
